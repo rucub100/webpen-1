@@ -1,0 +1,23 @@
+{
+  "name": "webpen",
+  "version": "1.0.0",
+  "description": "The Swiss Army knife for Web Application Security",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rucub100/webpen.git"
+  },
+  "keywords": [],
+  "author": "Ruslan Curbanov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rucub100/webpen/issues"
+  },
+  "homepage": "https://github.com/rucub100/webpen#readme",
+  "devDependencies": {
+    "electron": "^11.3.0"
+  }
+}
