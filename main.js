@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, nativeTheme } = require("electron");
 const path = require("path");
 
-const createWindow = () => {
+const createMainWindow = () => {
     const win = new BrowserWindow({
         minWidth: 800,
         minHeight: 600,
@@ -15,7 +15,7 @@ const createWindow = () => {
     win.loadFile("app/index.html");
 
     // Open the DevTools.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 
     // dark mode
     ipcMain.handle("dark-mode:toggle", () => {
@@ -32,7 +32,9 @@ const createWindow = () => {
     });
 };
 
-app.whenReady().then(createWindow);
+require("./app/electron/mainMenu");
+
+app.whenReady().then(createMainWindow);
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
@@ -42,6 +44,6 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
+        createMainWindow();
     }
 });
