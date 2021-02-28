@@ -1,15 +1,21 @@
 const { app, BrowserWindow, ipcMain, nativeTheme } = require("electron");
+const path = require("path");
 
-function createWindow() {
+const createWindow = () => {
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        minWidth: 800,
+        minHeight: 600,
         webPreferences: {
-            nodeIntegration: true,
+            contextIsolation: true,
+            sandbox: true,
+            preload: path.join(app.getAppPath(), "preload.js"),
         },
     });
 
     win.loadFile("index.html");
+
+    // Open the DevTools.
+    win.webContents.openDevTools();
 
     // dark mode
     ipcMain.handle("dark-mode:toggle", () => {
@@ -24,7 +30,7 @@ function createWindow() {
     ipcMain.handle("dark-mode:system", () => {
         nativeTheme.themeSource = "system";
     });
-}
+};
 
 app.whenReady().then(createWindow);
 

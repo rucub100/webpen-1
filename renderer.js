@@ -1,10 +1,8 @@
-const { ipcRenderer } = require("electron");
-
 // dark mode
 document
     .getElementById("toggle-dark-mode")
     .addEventListener("click", async () => {
-        const isDarkMode = await ipcRenderer.invoke("dark-mode:toggle");
+        const isDarkMode = await window.electron.darkModeToggle();
         document.getElementById("theme-source").innerHTML = isDarkMode
             ? "Dark"
             : "Light";
@@ -13,6 +11,19 @@ document
 document
     .getElementById("reset-to-system")
     .addEventListener("click", async () => {
-        await ipcRenderer.invoke("dark-mode:system");
+        await window.electron.darkModeSystem();
         document.getElementById("theme-source").innerHTML = "System";
     });
+
+// versions
+document.getElementById(
+    "nodeVersion"
+).innerText = window.electron.nodeVersion();
+
+document.getElementById(
+    "chromeVersion"
+).innerText = window.electron.chromeVersion();
+
+document.getElementById(
+    "electronVersion"
+).innerText = window.electron.electronVersion();
