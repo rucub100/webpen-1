@@ -8,11 +8,11 @@ const createWindow = () => {
         webPreferences: {
             contextIsolation: true,
             sandbox: true,
-            preload: path.join(app.getAppPath(), "preload.js"),
+            preload: path.join(app.getAppPath(), "app/preload.js"),
         },
     });
 
-    win.loadFile("index.html");
+    win.loadFile("app/index.html");
 
     // Open the DevTools.
     win.webContents.openDevTools();

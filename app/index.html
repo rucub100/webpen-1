@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <meta name="author" content="Ruslan Curbanov" />
+    <meta name="publisher" content="Ruslan Curbanov" />
+    <meta name="description" content="The Swiss Army knife for Web Application Security" />
+    <meta name="keywords" content="web application security, cyber security, penetration tests" />
+    <base href="./">
+    <title>Webpen</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <script defer type="text/javascript" src="renderer.js"></script>
+</head>
+
+<body>
+    <div id="wrapper">
+        <nav id="navigation">
+            <div id="icon">
+                <svg version="1.1" viewBox="0 0 25.944 4.0042" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(-2.8758 -3.0083)">
+                        <path transform="matrix(.26458 0 0 .26458 2.8758 3.0083)"
+                            d="m0 0v0.56641 14.568h4.5195 11.535v-0.56836h-11.623l-2.1699-14h37.941v-0.56641h-38.029-2.1738zm62.43 0v0.56641h24.775l4.9766 3.4844v3.6113 3.4219l-4.9727 3.4824h-38.422v0.56836h38.6l10.311-7.2207 0.035156 0.023438 0.066406-0.09375 0.25781-0.18164-0.066407-0.095703 0.066407-0.09375-0.25781-0.18164-0.066406-0.09375-0.035156 0.023438-10.311-7.2207h-24.957zm-56.938 1.0312 3.4922 12.992h0.72656l1.9414-7.2246 1.9414 7.2246h0.72852l3.4902-12.992h-7.709l1.1953 4.4434-1.9609 7.2617-3.1367-11.705h-0.70898zm15.313 0v12.992h9.4629v-3.2852h-6.0664v-1.6621h5.0391v-3.1172h-5.0391v-1.6426h6.0664v-3.2852h-9.4629zm13.947 0v12.992h5.75c0.56 0 1.0078-0.036663 1.3438-0.11133 0.336-0.074665 0.64028-0.1866 0.91406-0.33594 0.54756-0.31111 0.98308-0.73442 1.3066-1.2695 0.336-0.54756 0.50391-1.1459 0.50391-1.793 0-0.73422-0.22901-1.3936-0.68945-1.9785-0.46044-0.58489-1.0272-0.99598-1.6992-1.2324 0.56-0.29867 1.0026-0.70267 1.3262-1.2129 0.32356-0.52267 0.48438-1.0875 0.48438-1.6973-1e-6 -0.64711-0.16082-1.2332-0.48438-1.7559-0.31111-0.52267-0.76081-0.93376-1.3457-1.2324-0.48533-0.24889-1.1376-0.37305-1.959-0.37305h-5.4512zm14.041 0v12.992h3.3984v-3.9375h2.0352c0.93334 0 1.722-0.16986 2.3691-0.50586 0.75911-0.38578 1.3574-0.93838 1.793-1.6602 0.448-0.72178 0.67188-1.5124 0.67188-2.3711 0-0.85867-0.22388-1.6422-0.67188-2.3516-0.448-0.72178-1.0514-1.2763-1.8105-1.6621-0.65956-0.336-1.4431-0.50391-2.3516-0.50391h-5.4336zm13.65 0v12.992h9.1465v-0.69141h-8.4551v-5.6543h7.3535v-0.69141h-7.3535v-5.2637h8.4551v-0.69141h-9.1465zm13.221 0v5.7734 7.2188h0.69141v-12.096l9.1094 8.8848v3.2109h0.68945v-12.992h-0.68945v8.8105l-9.0723-8.8105h-0.72852zm-64.664 0.69141h5.916l-2.9492 11.014-1.959-7.2617-1.0078-3.752z" />
+                    </g>
+                </svg>
+            </div>
+        </nav>
+        <main id="container">
+            <div id="content">
+                <p>
+                    We are using node
+                    <span id="nodeVersion"></span>
+                    Chrome
+                    <span id="chromeVersion"></span>
+                    and Electron
+                    <span id="electronVersion"></span>
+                </p>
+
+                <p>Current theme source: <strong id="theme-source">System</strong></p>
+
+                <button id="toggle-dark-mode">Toggle Dark Mode</button>
+                <button id="reset-to-system">Reset to System Theme</button>
+            </div>
+            <footer id="statusBar"></footer>
+        </main>
+    </div>
+</body>
+
+</html>
