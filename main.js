@@ -1,4 +1,10 @@
-const { app, BrowserWindow, ipcMain, nativeTheme } = require("electron");
+const {
+    app,
+    BrowserWindow,
+    ipcMain,
+    nativeTheme,
+    nativeImage,
+} = require("electron");
 const path = require("path");
 
 const createMainWindow = () => {

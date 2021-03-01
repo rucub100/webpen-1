@@ -1,0 +1,16 @@
+ul {
+    line-height: 2;
+}
+
+ul > li {
+    padding: 2px 1rem;
+    cursor: pointer;
+}
+
+ul > li:hover {
+    background: rgba(var(--font), 0.3);
+}
+
+li span {
+    margin-left: 0.5rem;
+}
