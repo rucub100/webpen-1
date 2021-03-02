@@ -1,44 +1,9 @@
-const {
-    app,
-    BrowserWindow,
-    ipcMain,
-    nativeTheme,
-    nativeImage,
-} = require("electron");
-const path = require("path");
+const { app, BrowserWindow } = require("electron");
 
-const createMainWindow = () => {
-    const win = new BrowserWindow({
-        minWidth: 800,
-        minHeight: 600,
-        webPreferences: {
-            contextIsolation: true,
-            sandbox: true,
-            preload: path.join(app.getAppPath(), "app/preload.js"),
-        },
-    });
+const { buildAndSetApplicationMenu } = require("./app/electron/mainMenu");
+const { createMainWindow } = require("./app/electron/mainWindow");
 
-    win.loadFile("app/index.html");
-
-    // Open the DevTools.
-    // win.webContents.openDevTools();
-
-    // dark mode
-    ipcMain.handle("dark-mode:toggle", () => {
-        if (nativeTheme.shouldUseDarkColors) {
-            nativeTheme.themeSource = "light";
-        } else {
-            nativeTheme.themeSource = "dark";
-        }
-        return nativeTheme.shouldUseDarkColors;
-    });
-
-    ipcMain.handle("dark-mode:system", () => {
-        nativeTheme.themeSource = "system";
-    });
-};
-
-require("./app/electron/mainMenu");
+buildAndSetApplicationMenu();
 
 app.whenReady().then(createMainWindow);
 
