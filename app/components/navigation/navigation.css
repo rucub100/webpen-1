@@ -14,3 +14,7 @@ ul > li:hover {
 li span {
     margin-left: 0.5rem;
 }
+
+li.active {
+    background: rgba(var(--font), 0.1);
+}

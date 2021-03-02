@@ -34,19 +34,7 @@
         </nav>
         <main id="container">
             <div id="content">
-                <p>
-                    We are using node
-                    <span id="nodeVersion"></span>
-                    Chrome
-                    <span id="chromeVersion"></span>
-                    and Electron
-                    <span id="electronVersion"></span>
-                </p>
-
-                <p>Current theme source: <strong id="theme-source">System</strong></p>
-
-                <button id="toggle-dark-mode">Toggle Dark Mode</button>
-                <button id="reset-to-system">Reset to System Theme</button>
+                <iframe id="content-frame" src="./components/dashboard/dashboard.html" frameborder="0"></iframe>
             </div>
             <footer id="statusBar"></footer>
         </main>

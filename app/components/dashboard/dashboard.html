@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="../../styles.css">
+    <link rel="stylesheet" type="text/css" href="./dashboard.css">
+    <script defer src="../../static/fontawesome/js/all.js"></script>
+    <script defer type="text/javascript" src="./dashboard.js"></script>
+</head>
+
+<body>
+    <p>
+        We are using node
+        <span id="nodeVersion"></span>
+        Chrome
+        <span id="chromeVersion"></span>
+        and Electron
+        <span id="electronVersion"></span>
+    </p>
+
+    <p>Current theme source: <strong id="theme-source">System</strong></p>
+
+    <button id="toggle-dark-mode">Toggle Dark Mode</button>
+    <button id="reset-to-system">Reset to System Theme</button>
+</body>
+
+</html>
