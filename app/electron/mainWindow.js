@@ -25,6 +25,8 @@ const createMainWindow = () => {
     // win.webContents.openDevTools();
 
     // dark mode
+    ipcMain.handle("dark-mode:get", () => nativeTheme.shouldUseDarkColors);
+
     ipcMain.handle("dark-mode:toggle", () => {
         if (nativeTheme.shouldUseDarkColors) {
             nativeTheme.themeSource = "light";

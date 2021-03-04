@@ -16,3 +16,18 @@ top.openPage = (page) => {
     top.updateNavigation();
     document.getElementById("content-frame").src = pages[top.currentPage];
 };
+
+top.electron.shouldUseDarkColors().then((dark) => {
+    top.isDarkMode = dark;
+});
+
+top.darkModeToggle = async () => {
+    top.isDarkMode = await top.electron.darkModeToggle();
+    return top.isDarkMode;
+};
+
+top.darkModeSystem = async () => {
+    await top.electron.darkModeSystem();
+    top.isDarkMode = await top.electron.shouldUseDarkColors();
+    return top.isDarkMode;
+};

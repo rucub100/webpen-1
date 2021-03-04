@@ -18,7 +18,7 @@ const openTab = (tab) => {
 
     top.proxy.tab = tab;
     document.getElementById(tab + "-tablink").classList.add("active");
-    document.getElementById(tab).style.display = "block";
+    document.getElementById(tab).style.display = "flex";
 };
 
 console.log(top.proxy.tab);

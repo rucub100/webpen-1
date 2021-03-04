@@ -2,7 +2,7 @@
 document
     .getElementById("toggle-dark-mode")
     .addEventListener("click", async () => {
-        const isDarkMode = await top.electron.darkModeToggle();
+        const isDarkMode = await top.darkModeToggle();
         document.getElementById("theme-source").innerHTML = isDarkMode
             ? "Dark"
             : "Light";
@@ -11,7 +11,7 @@ document
 document
     .getElementById("reset-to-system")
     .addEventListener("click", async () => {
-        await top.electron.darkModeSystem();
+        await top.darkModeSystem();
         document.getElementById("theme-source").innerHTML = "System";
     });
 
