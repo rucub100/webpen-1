@@ -19,5 +19,8 @@
   "homepage": "https://github.com/rucub100/webpen#readme",
   "devDependencies": {
     "electron": "^11.3.0"
+  },
+  "dependencies": {
+    "monaco-editor": "^0.22.3"
   }
 }
