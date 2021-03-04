@@ -35,3 +35,9 @@
 h3 {
     padding: 1rem 0 0.5rem 0;
 }
+
+#monaco-editor {
+    width: 100%;
+    flex: 1 0 auto;
+    border: thin solid rgba(var(--font), 0.3);
+}

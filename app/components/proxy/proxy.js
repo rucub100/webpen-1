@@ -31,3 +31,7 @@ document.getElementById("start-proxy").addEventListener("click", async () => {
 document.getElementById("stop-proxy").addEventListener("click", async () => {
     await top.electron.stopProxy();
 });
+
+document.getElementById(
+    "monaco-editor"
+).style.backgroundColor = !!top.isDarkMode ? "rgb(30, 30, 30)" : "white";
