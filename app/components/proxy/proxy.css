@@ -1,0 +1,34 @@
+.tabsbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-flow: row nowrap;
+    width: 100%;
+    border-bottom: thin solid rgba(var(--font), 0.1);
+}
+
+.tablink {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 17px;
+}
+
+.tablink.active {
+    background: rgba(var(--font), 0.1);
+}
+
+.tablink:hover {
+    background: rgba(var(--font), 0.3);
+}
+
+.tabcontent {
+    display: none;
+    width: 100%;
+    flex: 1 0 auto;
+}
+
+h3 {
+    padding: 1rem 0 0.5rem 0;
+}

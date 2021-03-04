@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta http-equiv="Content-Security-Policy"
         content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
-    <title>proxy</title>
+    <title>Proxy</title>
     <link rel="stylesheet" type="text/css" href="../../styles.css">
     <link rel="stylesheet" type="text/css" href="./proxy.css">
     <script defer src="../../static/fontawesome/js/all.js"></script>
@@ -15,9 +15,28 @@
 </head>
 
 <body>
-    <h1>Proxy</h1>
-    <button id="start-proxy">Start</button>
-    <button id="stop-proxy">Stop</button>
+    <div class="tabsbar">
+        <div id="interceptor-tablink" class="tablink" onclick="openTab('interceptor')">Interceptor</div>
+        <div id="history-tablink" class="tablink" onclick="openTab('history')">History</div>
+        <div id="settings-tablink" class="tablink" onclick="openTab('settings')">Settings</div>
+    </div>
+
+    <div id="interceptor" class="tabcontent">
+        <h3>Interceptor</h3>
+        <p>TODO</p>
+    </div>
+
+    <div id="history" class="tabcontent">
+        <h3>History</h3>
+        <p>TODO</p>
+    </div>
+
+    <div id="settings" class="tabcontent">
+        <h3>Settings</h3>
+        <p>TODO</p>
+        <button id="start-proxy">Start</button>
+        <button id="stop-proxy">Stop</button>
+    </div>
 </body>
 
 </html>
