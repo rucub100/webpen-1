@@ -9,33 +9,38 @@
 
 #navigation {
     background-color: rgb(var(--background-0));
-    min-width: 20ch;
-    max-width: 40ch;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     flex-flow: column nowrap;
-    width: 30%;
+    min-width: 22ch;
+    width: 15%;
     height: 100%;
-    border-right: 1px solid rgba(var(--font), 0.1);
+    border-right: thin solid rgba(var(--font), 0.1);
+    transition: 300ms;
 }
 
 #navigationList {
     display: block;
     padding: 1rem;
-    padding-top: 0;
+    padding-top: 0.5rem;
     width: 100%;
     flex: 1 0 auto;
     overflow-y: scroll;
+    transition: 300ms;
 }
 
 #icon {
-    width: 100%;
-    min-height: calc(20ch / 3);
-    height: calc(100vw / 10);
-    max-height: calc(40ch / 3);
-    padding: 1rem;
-    fill: rgba(var(--font), 0.68);
+    width: calc(22ch - 2rem);
+    height: calc(6ch - 2rem);
+    margin: 1rem;
+    fill: rgba(var(--font), 0.1);
+    cursor: pointer;
+    transition: 300ms;
+}
+
+#icon:hover {
+    fill: rgb(var(--font));
 }
 
 #container {
@@ -61,5 +66,5 @@
 #statusBar {
     width: 100%;
     height: 1.5rem;
-    border-top: 1px solid rgba(var(--font), 0.1);
+    border-top: thin solid rgba(var(--font), 0.1);
 }

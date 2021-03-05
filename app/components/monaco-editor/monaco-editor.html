@@ -25,6 +25,7 @@
                 value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
                 theme: top.isDarkMode ? 'vs-dark' : 'vs',
                 readOnly: true,
+                minimap: { enabled: false },
             });
 
             window.onresize = function () {

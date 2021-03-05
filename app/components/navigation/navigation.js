@@ -25,3 +25,15 @@ forEachPage((page) => {
         }
     });
 });
+
+top.explorer.addListener((explorer) => {
+    if (!explorer) {
+        document
+            .querySelectorAll("li span")
+            .forEach((value) => (value.style.visibility = "collapse"));
+    } else {
+        document
+            .querySelectorAll("li span")
+            .forEach((value) => (value.style.visibility = ""));
+    }
+});
