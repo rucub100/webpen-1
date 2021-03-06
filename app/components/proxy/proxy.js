@@ -21,16 +21,29 @@ const openTab = (tab) => {
     document.getElementById(tab).style.display = "flex";
 };
 
-console.log(top.proxy.tab);
+const toggleProxyStatus = async (toggle = true) => {
+    let statusProxy = await top.electron.statusProxy();
+    if (toggle) {
+        if (!statusProxy) {
+            await top.electron.startProxy();
+        } else {
+            await top.electron.stopProxy();
+        }
+        statusProxy = await top.electron.statusProxy();
+    }
+
+    const toggleProxyIcon = document.querySelector("#toggle-proxy>svg");
+    if (toggleProxyIcon) {
+        toggleProxyIcon.classList.remove(statusProxy ? "fa-play" : "fa-stop");
+        toggleProxyIcon.classList.add(!statusProxy ? "fa-play" : "fa-stop");
+    }
+};
+
 openTab(top.proxy.tab);
 
-document.getElementById("start-proxy").addEventListener("click", async () => {
-    await top.electron.startProxy();
-});
-
-document.getElementById("stop-proxy").addEventListener("click", async () => {
-    await top.electron.stopProxy();
-});
+document
+    .getElementById("toggle-proxy")
+    .addEventListener("click", () => toggleProxyStatus());
 
 document.getElementById(
     "monaco-editor"

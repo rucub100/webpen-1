@@ -57,3 +57,28 @@ body {
     box-sizing: inherit;
     user-select: none;
 }
+
+h1,
+h2,
+h3 {
+    padding: 1rem 0 0.5rem 0;
+}
+
+p {
+    padding: 1rem 0;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    background-color: rgb(var(--background-0));
+    color: rgb(var(--font));
+    border: thin solid rgba(var(--font), 0.1);
+    outline: none;
+    cursor: pointer;
+    transition: background-color 250ms;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: rgba(var(--font), 0.1);
+}

@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("electron", {
     nodeVersion: () => process.versions.node,
     chromeVersion: () => process.versions.chrome,
     electronVersion: () => process.versions.electron,
+    statusProxy: () => ipcRenderer.invoke("proxy:status"),
     startProxy: () => ipcRenderer.invoke("proxy:start"),
     stopProxy: () => ipcRenderer.invoke("proxy:stop"),
 });

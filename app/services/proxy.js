@@ -26,7 +26,7 @@ const proxyRequest = (req, res) => {
 
 const startProxy = (port = 8080, host = "127.0.0.1") => {
     if (proxy) {
-        return;
+        return true;
     }
 
     proxy = http.createServer((req, res) => {
@@ -36,11 +36,13 @@ const startProxy = (port = 8080, host = "127.0.0.1") => {
     proxy.listen({ port, host }, () => {
         console.log("opened server(proxy) on ", proxy.address());
     });
+
+    return true;
 };
 
 const stopProxy = () => {
     if (!proxy) {
-        return;
+        return false;
     }
 
     const address = proxy.address();
@@ -48,6 +50,8 @@ const stopProxy = () => {
         console.log("closed server(proxy) on ", address);
         proxy = null;
     });
+
+    return false;
 };
 
 const watchQueue = () => {
@@ -66,16 +70,22 @@ const onIntercept = (enable) => {
     intercept = enable;
 };
 
+ipcMain.handle("proxy:status", () => {
+    if (proxy) {
+        return proxy.address();
+    }
+});
+
 ipcMain.handle("proxy:start", () => {
-    startProxy();
+    return startProxy();
 });
 
 ipcMain.handle("proxy:stop", () => {
-    stopProxy();
+    return stopProxy();
 });
 
 ipcMain.handle("proxy:intercept", (event, enable) => {
-    onIntercept(enable);
+    return onIntercept(enable);
 });
 
 module.exports = {
