@@ -17,7 +17,7 @@
 <body>
     <div class="tabsbar">
         <div id="interceptor-tablink" class="tablink" onclick="openTab('interceptor')">
-            <i class="fas fa-eye fa-fw fa-lg"></i>
+            <i class="fas fa-eye-slash fa-fw fa-lg"></i>
             <span>Interceptor</span>
         </div>
         <div id="history-tablink" class="tablink" onclick="openTab('history')">
@@ -31,7 +31,17 @@
     </div>
 
     <div id="interceptor" class="tabcontent">
-        <h3>Interceptor</h3>
+        <div id="interceptor-controls">
+            <button id="toggle-interceptor">
+                <i class="fas fa-toggle-off fa-fw fa-lg"></i><span>Enable</span>
+            </button>
+            <button id="accept">
+                <i class="fas fa-paper-plane fa-fw fa-lg"></i><span>Accept</span>
+            </button>
+            <button id="drop">
+                <i class="fas fa-ban fa-fw fa-lg"></i><span>Drop</span>
+            </button>
+        </div>
         <iframe id="monaco-editor" src="../monaco-editor/monaco-editor.html" frameborder="0"></iframe>
     </div>
 

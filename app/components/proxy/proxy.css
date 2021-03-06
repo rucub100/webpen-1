@@ -12,7 +12,6 @@
     outline: none;
     cursor: pointer;
     padding: 0.5rem 1rem;
-    font-size: 17px;
     color: rgba(var(--font), 0.5);
     transition: 300ms, border 100ms;
     border-bottom: thin solid transparent;
@@ -51,4 +50,8 @@ span {
 
 svg {
     margin-right: 0.5ch;
+}
+
+#interceptor-controls {
+    padding: 1rem 0;
 }

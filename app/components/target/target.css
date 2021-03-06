@@ -1,0 +1,47 @@
+.tabsbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-flow: row nowrap;
+    width: 100%;
+    border-bottom: thin solid rgba(var(--font), 0.1);
+}
+
+.tablink {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    color: rgba(var(--font), 0.5);
+    transition: 300ms, border 100ms;
+    border-bottom: thin solid transparent;
+}
+
+.tablink.active {
+    color: rgb(var(--font));
+    border-bottom: thin solid rgb(var(--font));
+}
+
+.tablink:hover {
+    transition: all 0ms;
+    color: rgb(var(--font));
+}
+
+.tabcontent {
+    display: none;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-flow: column nowrap;
+    width: 100%;
+    flex: 1 0 auto;
+}
+
+span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+svg {
+    margin-right: 0.5ch;
+}
