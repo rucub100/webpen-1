@@ -2,9 +2,11 @@ const { app, BrowserWindow } = require("electron");
 
 const { buildAndSetApplicationMenu } = require("./app/electron/mainMenu");
 const { createMainWindow } = require("./app/electron/mainWindow");
-const { stopProxy } = require("./app/services/proxy");
+const { stopProxy, startProxy } = require("./app/services/proxy");
 
 buildAndSetApplicationMenu();
+
+startProxy();
 
 app.whenReady().then(createMainWindow);
 

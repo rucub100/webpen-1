@@ -23,9 +23,11 @@ const openTab = (tab) => {
 
 const toggleProxyStatus = async (toggle = true) => {
     let statusProxy = await top.electron.statusProxy();
+    const address = document.getElementById("proxy-address").value;
+    const port = document.getElementById("proxy-port").value;
     if (toggle) {
         if (!statusProxy) {
-            await top.electron.startProxy();
+            await top.electron.startProxy(address, port);
         } else {
             await top.electron.stopProxy();
         }
@@ -33,13 +35,38 @@ const toggleProxyStatus = async (toggle = true) => {
     }
 
     const toggleProxyIcon = document.querySelector("#toggle-proxy>svg");
+    const toggleProxyText = document.querySelector("#toggle-proxy>span");
     if (toggleProxyIcon) {
         toggleProxyIcon.classList.remove(statusProxy ? "fa-play" : "fa-stop");
         toggleProxyIcon.classList.add(!statusProxy ? "fa-play" : "fa-stop");
     }
+    toggleProxyText.innerHTML = statusProxy ? "stop" : "start";
 };
 
-openTab(top.proxy.tab);
+const toggleInterceptor = async (toggle = true) => {
+    let intercept = await top.electron.getProxyIntercept();
+
+    if (toggle) {
+        await top.electron.setProxyIntercept(!intercept);
+        intercept = await top.electron.getProxyIntercept();
+    }
+
+    const toggleInterceptorIcon = document.querySelector(
+        "#toggle-interceptor>svg"
+    );
+    const toggleInterceptorText = document.querySelector(
+        "#toggle-interceptor>span"
+    );
+    if (toggleInterceptorIcon) {
+        toggleInterceptorIcon.classList.remove(
+            intercept ? "fa-toggle-on" : "fa-toggle-off"
+        );
+        toggleInterceptorIcon.classList.add(
+            !intercept ? "fa-toggle-off" : "fa-toggle-on"
+        );
+    }
+    toggleInterceptorText.innerHTML = intercept ? "disable" : "enable";
+};
 
 document
     .getElementById("toggle-proxy")
@@ -48,3 +75,9 @@ document
 document.getElementById(
     "monaco-editor"
 ).style.backgroundColor = !!top.isDarkMode ? "rgb(30, 30, 30)" : "white";
+
+window.onload = () => {
+    openTab(top.proxy.tab);
+    toggleProxyStatus(false);
+    toggleInterceptor(false);
+};

@@ -1,4 +1,4 @@
-const defaultTab = "sitemap";
+const defaultTab = "scope";
 if (!top.target) {
     top.target = { tab: defaultTab };
 } else if (!top.target.tab) {

@@ -32,7 +32,7 @@
 
     <div id="interceptor" class="tabcontent">
         <div id="interceptor-controls">
-            <button id="toggle-interceptor">
+            <button id="toggle-interceptor" style="min-width: 16ch;" onclick="toggleInterceptor()">
                 <i class="fas fa-toggle-off fa-fw fa-lg"></i><span>Enable</span>
             </button>
             <button id="accept">
@@ -52,9 +52,28 @@
 
     <div id="settings" class="tabcontent">
         <h3>Listener</h3>
-        <button id="toggle-proxy">
-            <i class="fas fa-play fa-fw fa-lg"></i><span>Start</span>
-        </button>
+        <div>
+            <button id="toggle-proxy" style="margin-right: 1rem; min-width: 15ch">
+                <i class="fas fa-play fa-fw fa-lg"></i><span>Start</span>
+            </button>
+
+            <label for="proxy-address">Address:</label>
+            <input id="proxy-address" name="proxy-address" list="address" value="127.0.0.1"
+                style="margin-right: 0.5rem; width: 20ch;">
+            <datalist id="address">
+                <option value="127.0.0.1">
+            </datalist>
+
+            <label for="proxy-port">Port:</label>
+            <input id="proxy-port" style="width: 11ch;" name="proxy-ports" list="port" type="number" min="0" max="65535"
+                value="8080">
+            <datalist id="port">
+                <option value="8080">
+                <option value="8081">
+                <option value="80">
+                <option value="81">
+            </datalist>
+        </div>
     </div>
 </body>
 

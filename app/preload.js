@@ -8,6 +8,10 @@ contextBridge.exposeInMainWorld("electron", {
     chromeVersion: () => process.versions.chrome,
     electronVersion: () => process.versions.electron,
     statusProxy: () => ipcRenderer.invoke("proxy:status"),
-    startProxy: () => ipcRenderer.invoke("proxy:start"),
+    startProxy: (address, port) =>
+        ipcRenderer.invoke("proxy:start", address, port),
     stopProxy: () => ipcRenderer.invoke("proxy:stop"),
+    getProxyIntercept: () => ipcRenderer.invoke("proxy:intercept:get"),
+    setProxyIntercept: (enable) =>
+        ipcRenderer.invoke("proxy:intercept", enable),
 });

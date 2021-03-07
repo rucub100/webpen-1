@@ -1,3 +1,7 @@
+body {
+    padding: 1rem;
+}
+
 .tabsbar {
     display: flex;
     justify-content: flex-start;

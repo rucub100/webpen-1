@@ -70,7 +70,7 @@ p {
 
 button {
     padding: 0.5rem 1rem;
-    background-color: rgb(var(--background-0));
+    background-color: rgba(var(--background-1), 0.9);
     color: rgb(var(--font));
     border: thin solid rgba(var(--font), 0.1);
     outline: none;
@@ -80,5 +80,20 @@ button {
 }
 
 button:hover {
-    background-color: rgba(var(--font), 0.1);
+    background-color: rgba(var(--background-1), 0.68);
+    box-shadow: 1px 1px 6px rgba(var(--font), 0.06);
+}
+
+button:active {
+    background-color: rgba(var(--background-1));
+    box-shadow: none;
+}
+
+input {
+    padding: 0.25rem;
+    color: rgb(var(--font));
+    background-color: rgb(var(--background-1));
+    border: thin solid rgba(var(--font), 0.1);
+    font-size: 1rem;
+    outline: none;
 }
