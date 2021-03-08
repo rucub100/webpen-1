@@ -1,6 +1,6 @@
 const { ipcMain } = require("electron");
 const http = require("http");
-const url = require("url");
+const { URL } = require("url");
 
 let proxy;
 
@@ -50,15 +50,23 @@ const stopProxy = () => {
     return false;
 };
 
+const _normalizeUrl = (url, host) => {
+    return new URL(url, `http://${host}`).href;
+};
+
 const proxyRequest = (req, res) => {
     const options = {
         method: req.method,
         headers: req.headers,
     };
 
-    const proxyReq = http.request(req.url, options, (targetRes) => {
-        proxyResQueue.push({ req, targetRes, res });
-    });
+    const proxyReq = http.request(
+        _normalizeUrl(req.url, req.headers.host),
+        options,
+        (targetRes) => {
+            proxyResQueue.push({ req, targetRes, res });
+        }
+    );
 
     req.pipe(proxyReq, {
         end: true,
@@ -81,9 +89,13 @@ const proxyRawRequest = (rawRequest, res) => {
         headers: _convertRawHeadersToOutgoingHttpHeaders(rawRequest.rawHeaders),
     };
 
-    const proxyReq = http.request(rawRequest.url, options, (targetRes) => {
-        proxyResQueue.push({ rawRequest, targetRes, res });
-    });
+    const proxyReq = http.request(
+        rawRequest.absoluteUrl,
+        options,
+        (targetRes) => {
+            proxyResQueue.push({ rawRequest, targetRes, res });
+        }
+    );
 
     proxyReq.end(rawRequest.body);
 };
@@ -95,6 +107,16 @@ const proxyResponse = (targetRes, res) => {
     });
 };
 
+const proxyRawResponse = (rawResponse, res) => {
+    res.writeHead(
+        rawResponse.statusCode,
+        rawResponse.statusMessage,
+        rawResponse.headers
+    );
+
+    res.end(rawResponse.body);
+};
+
 const interceptRequest = (req, res) => {
     let body = [];
     req.on("data", (chunk) => {
@@ -104,7 +126,8 @@ const interceptRequest = (req, res) => {
         interceptReqQueue.push({
             rawRequest: {
                 method: req.method,
-                url: new URL(req.url),
+                url: req.url,
+                absoluteUrl: _normalizeUrl(req.url, req.headers.host),
                 httpVersion: req.httpVersion,
                 rawHeaders: req.rawHeaders,
                 body,
@@ -122,12 +145,14 @@ const interceptResponse = (targetRes, res) => {
             body.push(chunk);
         })
         .on("end", () => {
+            // TODO encoding? e.g. body may be compressed (gzip)
             body = Buffer.concat(body).toString();
             interceptResQueue.push({
                 rawResponse: {
                     httpVersion: targetRes.httpVersion,
                     statusCode: targetRes.statusCode,
                     statusMessage: targetRes.statusMessage,
+                    headers: targetRes.headers,
                     rawHeaders: targetRes.rawHeaders,
                     body,
                     rawTrailers: targetRes.rawTrailers,
@@ -135,6 +160,62 @@ const interceptResponse = (targetRes, res) => {
                 res,
             });
         });
+};
+
+const getNextInterceptedMessage = () => {
+    if (
+        proxy &&
+        intercept &&
+        (interceptResQueue.length > 0 || interceptReqQueue.length > 0)
+    ) {
+        if (interceptResQueue.length > 0) {
+            return {
+                type: "response",
+                response: interceptResQueue[0].rawResponse,
+            };
+        } else if (interceptReqQueue.length > 0) {
+            return {
+                type: "request",
+                request: interceptReqQueue[0].rawRequest,
+            };
+        }
+    }
+
+    return { type: "none" };
+};
+
+const acceptNextInterceptedMessage = (value) => {
+    if (
+        proxy &&
+        intercept &&
+        (interceptResQueue.length > 0 || interceptReqQueue.length > 0)
+    ) {
+        if (interceptResQueue.length > 0) {
+            const { rawResponse, res } = interceptResQueue.shift();
+            // TODO use the modified response (parse from monaco editor)
+            proxyRawResponse(rawResponse, res);
+        } else if (interceptReqQueue.length > 0) {
+            const { rawRequest, res } = interceptReqQueue.shift();
+            console.log(value);
+            proxyRawRequest(rawRequest, res);
+        }
+    }
+};
+
+const dropNextInterceptedMessage = () => {
+    if (
+        proxy &&
+        intercept &&
+        (interceptResQueue.length > 0 || interceptReqQueue.length > 0)
+    ) {
+        if (interceptResQueue.length > 0) {
+            const { rawResponse, res } = interceptResQueue.shift();
+            res.end();
+        } else if (interceptReqQueue.length > 0) {
+            const { rawRequest, res } = interceptReqQueue.shift();
+            res.end();
+        }
+    }
 };
 
 const watchQueue = () => {
@@ -146,13 +227,13 @@ const watchQueue = () => {
     ) {
         if (interceptResQueue.length > 0 && !intercept) {
             const { rawResponse, res } = interceptResQueue.shift();
-            // TODO proxyRawResponse(rawResponse, res);
+            proxyRawResponse(rawResponse, res);
         } else if (interceptReqQueue.length > 0 && !intercept) {
             const { rawRequest, res } = interceptReqQueue.shift();
             proxyRawRequest(rawRequest, res);
         } else if (proxyResQueue.length > 0) {
             const { req, rawRequest, targetRes, res } = proxyResQueue.shift();
-            const url = req ? req.url : rawRequest.url.href;
+            const url = req ? req.url : rawRequest.url;
             console.log(new Date(), "[HTTP PROXY <-]:", url);
             if (intercept) {
                 interceptResponse(targetRes, res);
@@ -201,6 +282,18 @@ ipcMain.handle("proxy:intercept:get", () => {
 
 ipcMain.handle("proxy:intercept", (event, enable) => {
     return onIntercept(enable);
+});
+
+ipcMain.handle("proxy:intercept:next", () => {
+    return getNextInterceptedMessage();
+});
+
+ipcMain.handle("proxy:intercept:accept", (event, value) => {
+    return acceptNextInterceptedMessage(value);
+});
+
+ipcMain.handle("proxy:intercept:drop", () => {
+    return dropNextInterceptedMessage();
 });
 
 // #endregion

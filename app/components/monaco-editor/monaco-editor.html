@@ -22,11 +22,12 @@
         require.config({ paths: { vs: '../../static/monaco-editor/min/vs' } });
         require(['vs/editor/editor.main'], function () {
             var editor = monaco.editor.create(document.getElementById('monaco-editor-container'), {
-                value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
                 theme: top.isDarkMode ? 'vs-dark' : 'vs',
                 readOnly: true,
                 minimap: { enabled: false },
             });
+
+            parent.editor = editor;
 
             window.onresize = function () {
                 editor.layout();

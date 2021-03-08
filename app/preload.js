@@ -14,4 +14,9 @@ contextBridge.exposeInMainWorld("electron", {
     getProxyIntercept: () => ipcRenderer.invoke("proxy:intercept:get"),
     setProxyIntercept: (enable) =>
         ipcRenderer.invoke("proxy:intercept", enable),
+    getNextInterceptedMessage: () => ipcRenderer.invoke("proxy:intercept:next"),
+    acceptNextInterceptedMessage: (value) =>
+        ipcRenderer.invoke("proxy:intercept:accept", value),
+    dropNextInterceptedMessage: () =>
+        ipcRenderer.invoke("proxy:intercept:drop"),
 });
