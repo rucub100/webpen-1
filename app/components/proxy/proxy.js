@@ -53,11 +53,10 @@ const toggleInterceptor = async (toggle = true) => {
     let intercept = await top.electron.getProxyIntercept();
 
     if (toggle) {
-        top.proxy.message = null;
         await top.electron.setProxyIntercept(!intercept);
         intercept = await top.electron.getProxyIntercept();
         this.editor.getModel().setValue("");
-        readInterceptedMessage();
+        readInterceptedMessage(true);
     }
 
     const toggleInterceptorIcon = document.querySelector(
@@ -77,18 +76,42 @@ const toggleInterceptor = async (toggle = true) => {
     toggleInterceptorText.innerHTML = intercept ? "disable" : "enable";
 };
 
+const _parseMessage = (value) => {
+    const message = { ...top.proxy.messageRaw };
+
+    debugger;
+    if (top.proxy.messageType === "request") {
+        const lines = value.split("\r\n");
+        if (lines.length > 2) {
+            // parse headers
+            message.rawHeaders = [];
+            for (let i = 0; i < lines.length; i++) {
+                if (i === 0) continue; // ignore request line
+                if (lines[i] === "") break; // detect end of HTTP headers
+
+                const header = lines[i].split(":");
+                if (header.length >= 2) {
+                    message.rawHeaders.push(header[0].trim());
+                    message.rawHeaders.push(header.slice(1).join().trim());
+                }
+            }
+        }
+    } // TODO else parse response
+
+    return message;
+};
+
 const acceptMessage = async () => {
-    await top.electron.acceptNextInterceptedMessage(this.editor.getValue());
-    top.proxy.message = null;
+    const value = this.editor.getValue();
+    await top.electron.acceptNextInterceptedMessage(_parseMessage(value));
     this.editor.getModel().setValue("");
-    readInterceptedMessage();
+    readInterceptedMessage(true);
 };
 
 const dropMessage = async () => {
-    await top.electron.acceptNextInterceptedMessage();
-    top.proxy.message = null;
+    await top.electron.dropNextInterceptedMessage();
     this.editor.getModel().setValue("");
-    readInterceptedMessage();
+    readInterceptedMessage(true);
 };
 
 const _formatRequest = (request) => {
@@ -105,25 +128,57 @@ const _formatRequest = (request) => {
             request.rawHeaders[i] + ": " + request.rawHeaders[i + 1] + "\r\n";
     }
 
-    if (request.body) {
+    if (request.rawBody) {
         formattedRequest += "\r\n";
-        formattedRequest += request.body;
+        formattedRequest += new TextDecoder().decode(request.rawBody);
     }
 
     return formattedRequest;
 };
 
-const readInterceptedMessage = async () => {
+const _formatResponse = (response) => {
+    let formattedResponse =
+        "HTTP/" +
+        response.httpVersion +
+        " " +
+        response.statusCode +
+        " " +
+        response.statusMessage +
+        "\r\n";
+
+    for (let i = 0; i < response.rawHeaders.length; i += 2) {
+        formattedResponse +=
+            response.rawHeaders[i] + ": " + response.rawHeaders[i + 1] + "\r\n";
+    }
+
+    if (response.rawBody) {
+        formattedResponse += "\r\n";
+        formattedResponse += new TextDecoder().decode(response.rawBody);
+    }
+
+    return formattedResponse;
+};
+
+const readInterceptedMessage = async (force = false) => {
+    if (force) {
+        top.proxy.messageType = null;
+        top.proxy.messageRaw = null;
+        top.proxy.message = null;
+    }
+
     if (top.proxy.message) {
         return;
     }
 
     const next = await top.electron.getNextInterceptedMessage();
+    debugger;
     if (next.type === "request" || next.type === "response") {
+        top.proxy.messageType = next.type;
+        top.proxy.messageRaw = next[next.type];
         top.proxy.message =
             next.type === "request"
-                ? _formatRequest(next[next.type])
-                : JSON.stringify(next[next.type]);
+                ? _formatRequest(next.rawMsg)
+                : _formatResponse(next.rawMsg);
         this.editor.getModel().setValue(top.proxy.message);
     } else {
         setTimeout(readInterceptedMessage, 200);

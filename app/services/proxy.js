@@ -9,6 +9,7 @@ let proxyReqQueue = [];
 let proxyResQueue = [];
 let interceptReqQueue = [];
 let interceptResQueue = [];
+let interceptMsgQueue = [];
 
 // #region Functions ----------------------------------------------------------
 
@@ -97,7 +98,7 @@ const proxyRawRequest = (rawRequest, res) => {
         }
     );
 
-    proxyReq.end(rawRequest.body);
+    proxyReq.end(rawRequest.rawBody);
 };
 
 const proxyResponse = (targetRes, res) => {
@@ -114,7 +115,20 @@ const proxyRawResponse = (rawResponse, res) => {
         rawResponse.headers
     );
 
-    res.end(rawResponse.body);
+    res.end(rawResponse.rawBody);
+};
+
+const ProxyRawMessage = (msg, change, res) => {
+    let rawMsg = msg.rawMsg;
+    if (msg.type === "response") {
+        proxyRawResponse(rawMsg, res);
+    } else if (msg.type === "request") {
+        if (change) {
+            rawMsg = { ...rawMsg, rawHeaders: change.rawHeaders };
+        }
+
+        proxyRawRequest(rawMsg, res);
+    }
 };
 
 const interceptRequest = (req, res) => {
@@ -122,7 +136,7 @@ const interceptRequest = (req, res) => {
     req.on("data", (chunk) => {
         body.push(chunk);
     }).on("end", () => {
-        body = Buffer.concat(body).toString();
+        body = Buffer.concat(body);
         interceptReqQueue.push({
             rawRequest: {
                 method: req.method,
@@ -130,7 +144,7 @@ const interceptRequest = (req, res) => {
                 absoluteUrl: _normalizeUrl(req.url, req.headers.host),
                 httpVersion: req.httpVersion,
                 rawHeaders: req.rawHeaders,
-                body,
+                rawBody: body,
                 rawTrailers: req.rawTrailers,
             },
             res,
@@ -145,8 +159,7 @@ const interceptResponse = (targetRes, res) => {
             body.push(chunk);
         })
         .on("end", () => {
-            // TODO encoding? e.g. body may be compressed (gzip)
-            body = Buffer.concat(body).toString();
+            body = Buffer.concat(body);
             interceptResQueue.push({
                 rawResponse: {
                     httpVersion: targetRes.httpVersion,
@@ -154,7 +167,7 @@ const interceptResponse = (targetRes, res) => {
                     statusMessage: targetRes.statusMessage,
                     headers: targetRes.headers,
                     rawHeaders: targetRes.rawHeaders,
-                    body,
+                    rawBody: body,
                     rawTrailers: targetRes.rawTrailers,
                 },
                 res,
@@ -169,63 +182,64 @@ const getNextInterceptedMessage = () => {
         (interceptResQueue.length > 0 || interceptReqQueue.length > 0)
     ) {
         if (interceptResQueue.length > 0) {
-            return {
-                type: "response",
-                response: interceptResQueue[0].rawResponse,
-            };
+            const { rawResponse, res } = interceptResQueue.shift();
+            interceptMsgQueue.push({
+                msg: {
+                    type: "response",
+                    rawMsg: rawResponse,
+                },
+                res,
+            });
         } else if (interceptReqQueue.length > 0) {
-            return {
-                type: "request",
-                request: interceptReqQueue[0].rawRequest,
-            };
+            const { rawRequest, res } = interceptReqQueue.shift();
+            interceptMsgQueue.push({
+                msg: {
+                    type: "request",
+                    rawMsg: rawRequest,
+                },
+                res,
+            });
         }
+    }
+
+    if (proxy && intercept && interceptMsgQueue.length > 0) {
+        return interceptMsgQueue[0].msg;
     }
 
     return { type: "none" };
 };
 
 const acceptNextInterceptedMessage = (value) => {
-    if (
-        proxy &&
-        intercept &&
-        (interceptResQueue.length > 0 || interceptReqQueue.length > 0)
-    ) {
-        if (interceptResQueue.length > 0) {
-            const { rawResponse, res } = interceptResQueue.shift();
-            // TODO use the modified response (parse from monaco editor)
-            proxyRawResponse(rawResponse, res);
-        } else if (interceptReqQueue.length > 0) {
-            const { rawRequest, res } = interceptReqQueue.shift();
-            console.log(value);
-            proxyRawRequest(rawRequest, res);
-        }
+    if (proxy && intercept && interceptMsgQueue.length > 0) {
+        const { msg, res } = interceptMsgQueue.shift();
+
+        ProxyRawMessage(msg, value, res);
+    } else {
+        console.warn("No intercepted message to accept");
     }
 };
 
 const dropNextInterceptedMessage = () => {
-    if (
-        proxy &&
-        intercept &&
-        (interceptResQueue.length > 0 || interceptReqQueue.length > 0)
-    ) {
-        if (interceptResQueue.length > 0) {
-            const { rawResponse, res } = interceptResQueue.shift();
-            res.end();
-        } else if (interceptReqQueue.length > 0) {
-            const { rawRequest, res } = interceptReqQueue.shift();
-            res.end();
-        }
+    if (proxy && intercept && interceptMsgQueue.length > 0) {
+        const { res } = interceptMsgQueue.shift();
+        res.end();
+    } else {
+        console.warn("No intercepted message to drop");
     }
 };
 
 const watchQueue = () => {
     while (
+        (interceptMsgQueue.length > 0 && !intercept) ||
         (interceptResQueue.length > 0 && !intercept) ||
         (interceptReqQueue.length > 0 && !intercept) ||
         proxyResQueue.length > 0 ||
         proxyReqQueue.length > 0
     ) {
-        if (interceptResQueue.length > 0 && !intercept) {
+        if (interceptMsgQueue.length > 0 && !intercept) {
+            const { msg, res } = interceptMsgQueue.shift();
+            ProxyRawMessage(msg, undefined, res);
+        } else if (interceptResQueue.length > 0 && !intercept) {
             const { rawResponse, res } = interceptResQueue.shift();
             proxyRawResponse(rawResponse, res);
         } else if (interceptReqQueue.length > 0 && !intercept) {
