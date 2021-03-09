@@ -23,7 +23,6 @@
         require(['vs/editor/editor.main'], function () {
             var editor = monaco.editor.create(document.getElementById('monaco-editor-container'), {
                 theme: top.isDarkMode ? 'vs-dark' : 'vs',
-                readOnly: true,
                 minimap: { enabled: false },
             });
 
