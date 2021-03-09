@@ -33,7 +33,7 @@ const toggleProxyStatus = async (toggle = true) => {
         }
         statusProxy = await top.electron.statusProxy();
         if (!statusProxy) {
-            await top.electron.setProxyIntercept(!intercept);
+            await top.electron.setProxyIntercept(false);
             toggleInterceptor(false);
             top.proxy.message = null;
             this.editor.getModel().setValue("");
@@ -79,7 +79,6 @@ const toggleInterceptor = async (toggle = true) => {
 const _parseMessage = (value) => {
     const message = { ...top.proxy.messageRaw };
 
-    debugger;
     if (top.proxy.messageType === "request") {
         const lines = value.split("\r\n");
         if (lines.length > 2) {
@@ -171,7 +170,6 @@ const readInterceptedMessage = async (force = false) => {
     }
 
     const next = await top.electron.getNextInterceptedMessage();
-    debugger;
     if (next.type === "request" || next.type === "response") {
         top.proxy.messageType = next.type;
         top.proxy.messageRaw = next[next.type];
