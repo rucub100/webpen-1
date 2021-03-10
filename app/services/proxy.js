@@ -1,5 +1,9 @@
-const { ipcMain } = require("electron");
+const { ipcMain, protocol } = require("electron");
+const httpolyglot = require("@httptoolkit/httpolyglot");
+const net = require("net");
 const http = require("http");
+const https = require("https");
+const fs = require("fs");
 const { URL } = require("url");
 
 let proxy;
@@ -18,13 +22,33 @@ const startProxy = (address = "127.0.0.1", port = 8080) => {
         return true;
     }
 
-    proxy = http.createServer((req, res) => {
-        proxyReqQueue.push({ req, res });
-    });
+    proxy = httpolyglot.createServer(
+        {
+            key: fs.readFileSync("key.pem"),
+            cert: fs.readFileSync("cert.pem"),
+        },
+        (req, res) => {
+            proxyReqQueue.push({ req, res });
+        }
+    );
 
     proxy
         .listen({ host: address, port }, () => {
             console.log("opened server(proxy) on ", proxy.address());
+        })
+        .on("connect", (req, clientSocket, head) => {
+            // Connect to an origin server
+            // const { port, hostname } = new URL(`http://${req.url}`);
+            const serverSocket = net.connect(port || 80, address, () => {
+                clientSocket.write(
+                    "HTTP/1.1 200 Connection Established\r\n" +
+                        "Proxy-agent: Node.js-Proxy\r\n" +
+                        "\r\n"
+                );
+                serverSocket.write(head);
+                serverSocket.pipe(clientSocket);
+                clientSocket.pipe(serverSocket);
+            });
         })
         .on("error", (error) => {
             proxy = null;
@@ -51,8 +75,8 @@ const stopProxy = () => {
     return false;
 };
 
-const _normalizeUrl = (url, host) => {
-    return new URL(url, `http://${host}`).href;
+const _normalizeUrl = (protocol, url, host) => {
+    return new URL(url, `${protocol}://${host}`).href;
 };
 
 const proxyRequest = (req, res) => {
@@ -61,8 +85,10 @@ const proxyRequest = (req, res) => {
         headers: req.headers,
     };
 
-    const proxyReq = http.request(
-        _normalizeUrl(req.url, req.headers.host),
+    const protocol = req.socket.encrypted ? "https" : "http";
+    const httpx = protocol === "https" ? https : http;
+    const proxyReq = httpx.request(
+        _normalizeUrl(protocol, req.url, req.headers.host),
         options,
         (targetRes) => {
             proxyResQueue.push({ req, targetRes, res });
@@ -90,7 +116,8 @@ const proxyRawRequest = (rawRequest, res) => {
         headers: _convertRawHeadersToOutgoingHttpHeaders(rawRequest.rawHeaders),
     };
 
-    const proxyReq = http.request(
+    const httpx = rawRequest.absoluteUrl.startsWith("https") ? https : http;
+    const proxyReq = httpx.request(
         rawRequest.absoluteUrl,
         options,
         (targetRes) => {
@@ -132,6 +159,7 @@ const ProxyRawMessage = (msg, change, res) => {
 };
 
 const interceptRequest = (req, res) => {
+    const protocol = req.socket.encrypted ? "https" : "http";
     let body = [];
     req.on("data", (chunk) => {
         body.push(chunk);
@@ -141,7 +169,7 @@ const interceptRequest = (req, res) => {
             rawRequest: {
                 method: req.method,
                 url: req.url,
-                absoluteUrl: _normalizeUrl(req.url, req.headers.host),
+                absoluteUrl: _normalizeUrl(protocol, req.url, req.headers.host),
                 httpVersion: req.httpVersion,
                 rawHeaders: req.rawHeaders,
                 rawBody: body,
