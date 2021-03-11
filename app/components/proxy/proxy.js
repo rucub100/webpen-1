@@ -59,12 +59,23 @@ const toggleInterceptor = async (toggle = true) => {
         readInterceptedMessage(true);
     }
 
+    const toggleInterceptorTablink = document.querySelector(
+        "#interceptor-tablink>svg"
+    );
     const toggleInterceptorIcon = document.querySelector(
         "#toggle-interceptor>svg"
     );
     const toggleInterceptorText = document.querySelector(
         "#toggle-interceptor>span"
     );
+    if (toggleInterceptorTablink) {
+        toggleInterceptorTablink.classList.remove(
+            intercept ? "fa-eye" : "fa-eye-slash"
+        );
+        toggleInterceptorTablink.classList.add(
+            !intercept ? "fa-eye-slash" : "fa-eye"
+        );
+    }
     if (toggleInterceptorIcon) {
         toggleInterceptorIcon.classList.remove(
             intercept ? "fa-toggle-on" : "fa-toggle-off"
