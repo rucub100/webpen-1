@@ -21,6 +21,10 @@ const createMainWindow = () => {
         win.show();
     });
 
+    global.show = () => {
+        win.show();
+    };
+
     // Open the DevTools.
     // win.webContents.openDevTools();
 

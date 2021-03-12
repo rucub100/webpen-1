@@ -231,6 +231,7 @@ const getNextInterceptedMessage = () => {
     }
 
     if (proxy && intercept && interceptMsgQueue.length > 0) {
+        global.show();
         return interceptMsgQueue[0].msg;
     }
 
