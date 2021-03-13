@@ -96,7 +96,23 @@ const _parseMessage = (value) => {
             // parse headers
             message.rawHeaders = [];
             for (let i = 0; i < lines.length; i++) {
-                if (i === 0) continue; // ignore request line
+                // parse request line
+                if (i === 0) {
+                    const requestLine = lines[i]
+                        .split(/\s/g)
+                        .filter((x) => x.trim().length > 0)
+                        .map((x) => x.trim());
+
+                    if (requestLine.length === 3) {
+                        const method = requestLine[0];
+                        const url = requestLine[1];
+                        const httpVersion = requestLine[1].split("/")[1];
+                        message.method = method;
+                        message.url = url;
+                        message.httpVersion = httpVersion;
+                    }
+                }
+
                 if (lines[i] === "") break; // detect end of HTTP headers
 
                 const header = lines[i].split(":");

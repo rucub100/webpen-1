@@ -1,4 +1,4 @@
-const { ipcMain, protocol } = require("electron");
+const { ipcMain } = require("electron");
 const httpolyglot = require("@httptoolkit/httpolyglot");
 const net = require("net");
 const http = require("http");
@@ -37,8 +37,6 @@ const startProxy = (address = "127.0.0.1", port = 8080) => {
             console.log("opened server(proxy) on ", proxy.address());
         })
         .on("connect", (req, clientSocket, head) => {
-            // Connect to an origin server
-            // const { port, hostname } = new URL(`http://${req.url}`);
             const serverSocket = net.connect(port || 80, address, () => {
                 clientSocket.write(
                     "HTTP/1.1 200 Connection Established\r\n" +
@@ -146,12 +144,34 @@ const proxyRawResponse = (rawResponse, res) => {
 };
 
 const ProxyRawMessage = (msg, change, res) => {
-    let rawMsg = msg.rawMsg;
+    let rawMsg = { ...msg.rawMsg };
     if (msg.type === "response") {
         proxyRawResponse(rawMsg, res);
     } else if (msg.type === "request") {
         if (change) {
-            rawMsg = { ...rawMsg, rawHeaders: change.rawHeaders };
+            if (change.rawHeaders) {
+                rawMsg.rawHeaders = change.rawHeaders;
+            }
+
+            if (change.method) {
+                rawMsg.method = change.method;
+            }
+
+            if (change.httpVersion) {
+                rawMsg.httpVersion = change.httpVersion;
+            }
+
+            if (change.url) {
+                rawMsg.url = change.url;
+            }
+
+            if (change.absoluteUrl) {
+                rawMsg.absoluteUrl = change.absoluteUrl;
+            }
+
+            if (change.rawBody) {
+                rawMsg.rawBody = change.rawBody;
+            }
         }
 
         proxyRawRequest(rawMsg, res);
