@@ -103,5 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-# TLS Cert and key
+# TLS Cert and key file
 *.pem
+*.key
