@@ -143,27 +143,44 @@ const proxyRawResponse = (rawResponse, res) => {
 const ProxyRawMessage = (msg, change, res) => {
     let rawMsg = { ...msg.rawMsg };
     if (msg.type === "response") {
-        proxyRawResponse(rawMsg, res);
-    } else if (msg.type === "request") {
         if (change) {
+            if (change.httpVersion) {
+                rawMsg.httpVersion = change.httpVersion;
+            }
+
+            if (change.statusCode) {
+                rawMsg.statusCode = change.statusCode;
+            }
+            if (change.statusMessage) {
+                rawMsg.statusMessage = change.statusMessage;
+            }
+
             if (change.rawHeaders) {
                 rawMsg.rawHeaders = change.rawHeaders;
             }
 
+            if (change.rawBody) {
+                rawMsg.rawBody = change.rawBody;
+            }
+        }
+
+        proxyRawResponse(rawMsg, res);
+    } else if (msg.type === "request") {
+        if (change) {
             if (change.method) {
                 rawMsg.method = change.method;
-            }
-
-            if (change.httpVersion) {
-                rawMsg.httpVersion = change.httpVersion;
             }
 
             if (change.url) {
                 rawMsg.url = change.url;
             }
 
-            if (change.absoluteUrl) {
-                rawMsg.absoluteUrl = change.absoluteUrl;
+            if (change.httpVersion) {
+                rawMsg.httpVersion = change.httpVersion;
+            }
+
+            if (change.rawHeaders) {
+                rawMsg.rawHeaders = change.rawHeaders;
             }
 
             if (change.rawBody) {

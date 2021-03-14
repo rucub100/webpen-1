@@ -100,6 +100,22 @@ const _parseRequestLine = (line, message) => {
     }
 };
 
+const _parseResponseLine = (line, message) => {
+    const requestLine = line
+        .split(/\s/g)
+        .filter((x) => x.trim().length > 0)
+        .map((x) => x.trim());
+
+    if (requestLine.length >= 2) {
+        message.httpVersion = requestLine[0].split("/")[1];
+        message.statusCode = requestLine[1];
+
+        if (requestLine.length >= 3) {
+            message.statusMessage = requestLine[2];
+        }
+    }
+};
+
 const _parseHeader = (line, message) => {
     const header = line.split(":");
 
@@ -136,13 +152,33 @@ const _parseMessage = (value) => {
                 _parseHeader(lines[i], message);
             }
         }
-    } // TODO else parse response
+    } else if (top.proxy.messageType === "response") {
+        const lines = value.split("\r\n");
+        if (lines.length > 2) {
+            // parse headers
+            message.rawHeaders = [];
+            for (let i = 0; i < lines.length; i++) {
+                // parse request line
+                if (i === 0) {
+                    _parseResponseLine(lines[i], message);
+                }
+
+                // detect end of HTTP headers
+                if (lines[i] === "") {
+                    _parseBody(lines.slice(i + 1, lines.length), message);
+                    break;
+                }
+
+                _parseHeader(lines[i], message);
+            }
+        }
+    }
 
     return message;
 };
 
 const acceptMessage = async () => {
-    const value = this.editor.getValue();
+    const value = this.editor.getValue({ lineEnding: "\r\n" });
     await top.electron.acceptNextInterceptedMessage(_parseMessage(value));
     this.editor.getModel().setValue("");
     readInterceptedMessage(true);
@@ -202,7 +238,6 @@ const _formatResponse = (response) => {
 const readInterceptedMessage = async (force = false) => {
     if (force) {
         top.proxy.messageType = null;
-        top.proxy.messageRaw = null;
         top.proxy.message = null;
     }
 
@@ -213,7 +248,6 @@ const readInterceptedMessage = async (force = false) => {
     const next = await top.electron.getNextInterceptedMessage();
     if (next.type === "request" || next.type === "response") {
         top.proxy.messageType = next.type;
-        top.proxy.messageRaw = next[next.type];
         top.proxy.message =
             next.type === "request"
                 ? _formatRequest(next.rawMsg)
