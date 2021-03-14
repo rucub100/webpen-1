@@ -3,7 +3,7 @@ const httpolyglot = require("@httptoolkit/httpolyglot");
 const net = require("net");
 const http = require("http");
 const https = require("https");
-const fs = require("fs");
+const { getCAPem, getCAPrivateKeyPem } = require("./pki");
 const { URL } = require("url");
 
 let proxy;
@@ -22,10 +22,15 @@ const startProxy = (address = "127.0.0.1", port = 8080) => {
         return true;
     }
 
+    const key = getCAPrivateKeyPem();
+    const cert = getCAPem();
+
+    console.log(key);
+    console.log(cert);
     proxy = httpolyglot.createServer(
         {
-            key: fs.readFileSync("key.pem"),
-            cert: fs.readFileSync("cert.pem"),
+            key,
+            cert,
         },
         (req, res) => {
             proxyReqQueue.push({ req, res });
