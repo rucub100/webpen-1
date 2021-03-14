@@ -105,6 +105,19 @@ const _getCACert = () => {
                     objCA: true,
                 },
                 {
+                    name: "subjectAltName",
+                    altNames: [
+                        {
+                            type: 6, // URI
+                            value: "http://localhost",
+                        },
+                        {
+                            type: 7, // IP
+                            ip: "127.0.0.1",
+                        },
+                    ],
+                },
+                {
                     name: "subjectKeyIdentifier",
                 },
             ]);
@@ -136,8 +149,9 @@ const _getCert = (domain) => {
     const keys = _getKeys();
     const caCert = _getCACert();
     const cert = forge.pki.createCertificate();
+    const keyPair = forge.pki.rsa.generateKeyPair(2048);
 
-    cert.publicKey = forge.pki.rsa.generateKeyPair(2048).publicKey;
+    cert.publicKey = keyPair.publicKey;
     cert.serialNumber = "01";
     cert.validity.notBefore = new Date();
     cert.validity.notAfter = new Date();
@@ -197,7 +211,7 @@ const _getCert = (domain) => {
 
     cert.sign(keys.privateKey);
 
-    return cert;
+    return { cert: cert, key: keyPair.privateKey };
 };
 
 const getCAPem = () => {
@@ -215,8 +229,11 @@ const getCAPrivateKeyPem = () => {
 };
 
 const getPem = (domain) => {
-    const cert = _getCert(domain);
-    return forge.pki.certificateToPem(cert);
+    const { cert, key } = _getCert(domain);
+    return {
+        cert: forge.pki.certificateToPem(cert),
+        key: forge.pki.privateKeyToPem(key),
+    };
 };
 
 module.exports = {
