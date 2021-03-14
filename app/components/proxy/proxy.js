@@ -87,6 +87,32 @@ const toggleInterceptor = async (toggle = true) => {
     toggleInterceptorText.innerHTML = intercept ? "disable" : "enable";
 };
 
+const _parseRequestLine = (line, message) => {
+    const requestLine = line
+        .split(/\s/g)
+        .filter((x) => x.trim().length > 0)
+        .map((x) => x.trim());
+
+    if (requestLine.length === 3) {
+        message.method = requestLine[0];
+        message.url = requestLine[1];
+        message.httpVersion = requestLine[1].split("/")[1];
+    }
+};
+
+const _parseHeader = (line, message) => {
+    const header = line.split(":");
+
+    if (header.length >= 2) {
+        message.rawHeaders.push(header[0].trim());
+        message.rawHeaders.push(header.slice(1).join().trim());
+    }
+};
+
+const _parseBody = (body, message) => {
+    message.rawBody = body.join("\r\n");
+};
+
 const _parseMessage = (value) => {
     const message = { ...top.proxy.messageRaw };
 
@@ -98,28 +124,16 @@ const _parseMessage = (value) => {
             for (let i = 0; i < lines.length; i++) {
                 // parse request line
                 if (i === 0) {
-                    const requestLine = lines[i]
-                        .split(/\s/g)
-                        .filter((x) => x.trim().length > 0)
-                        .map((x) => x.trim());
-
-                    if (requestLine.length === 3) {
-                        const method = requestLine[0];
-                        const url = requestLine[1];
-                        const httpVersion = requestLine[1].split("/")[1];
-                        message.method = method;
-                        message.url = url;
-                        message.httpVersion = httpVersion;
-                    }
+                    _parseRequestLine(lines[i], message);
                 }
 
-                if (lines[i] === "") break; // detect end of HTTP headers
-
-                const header = lines[i].split(":");
-                if (header.length >= 2) {
-                    message.rawHeaders.push(header[0].trim());
-                    message.rawHeaders.push(header.slice(1).join().trim());
+                // detect end of HTTP headers
+                if (lines[i] === "") {
+                    _parseBody(lines.slice(i + 1, lines.length), message);
+                    break;
                 }
+
+                _parseHeader(lines[i], message);
             }
         }
     } // TODO else parse response
