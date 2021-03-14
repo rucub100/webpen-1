@@ -21,7 +21,6 @@
     "electron": "^11.3.0"
   },
   "dependencies": {
-    "@httptoolkit/httpolyglot": "^1.0.0",
     "monaco-editor": "^0.22.3",
     "node-forge": "^0.10.0"
   }
