@@ -3,6 +3,7 @@ const fs = require("fs");
 
 let _keys;
 let _caCert;
+const _pems = new Map();
 
 const _getKeys = () => {
     if (!_keys) {
@@ -122,7 +123,7 @@ const _getCACert = () => {
                 },
             ]);
 
-            caCert.sign(keys.privateKey);
+            caCert.sign(keys.privateKey, forge.md.sha256.create());
 
             _caCert = caCert;
 
@@ -152,7 +153,7 @@ const _getCert = (domain) => {
     const keyPair = forge.pki.rsa.generateKeyPair(2048);
 
     cert.publicKey = keyPair.publicKey;
-    cert.serialNumber = "01";
+    cert.serialNumber = "02";
     cert.validity.notBefore = new Date();
     cert.validity.notAfter = new Date();
     cert.validity.notAfter.setFullYear(
@@ -209,7 +210,7 @@ const _getCert = (domain) => {
         },
     ]);
 
-    cert.sign(keys.privateKey);
+    cert.sign(keys.privateKey, forge.md.sha256.create());
 
     return { cert: cert, key: keyPair.privateKey };
 };
@@ -229,11 +230,19 @@ const getCAPrivateKeyPem = () => {
 };
 
 const getPem = (domain) => {
+    if (_pems.has(domain)) {
+        return _pems.get(domain);
+    }
+
     const { cert, key } = _getCert(domain);
-    return {
+    const pem = {
         cert: forge.pki.certificateToPem(cert),
         key: forge.pki.privateKeyToPem(key),
     };
+
+    _pems.set(domain, pem);
+
+    return pem;
 };
 
 module.exports = {
