@@ -96,7 +96,7 @@ const _parseRequestLine = (line, message) => {
     if (requestLine.length === 3) {
         message.method = requestLine[0];
         message.url = requestLine[1];
-        message.httpVersion = requestLine[1].split("/")[1];
+        message.httpVersion = requestLine[2].split("/")[1];
     }
 };
 

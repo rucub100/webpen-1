@@ -115,13 +115,10 @@ const proxyRawRequest = (rawRequest, res) => {
     };
 
     const httpx = rawRequest.absoluteUrl.startsWith("https") ? https : http;
-    const proxyReq = httpx.request(
-        rawRequest.absoluteUrl,
-        options,
-        (targetRes) => {
-            proxyResQueue.push({ rawRequest, targetRes, res });
-        }
-    );
+    const newUrl = new URL(rawRequest.url, rawRequest.absoluteUrl).href;
+    const proxyReq = httpx.request(newUrl, options, (targetRes) => {
+        proxyResQueue.push({ rawRequest, targetRes, res });
+    });
 
     proxyReq.end(rawRequest.rawBody);
 };
