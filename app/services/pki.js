@@ -45,7 +45,10 @@ const _getCACert = () => {
             const caCert = forge.pki.createCertificate();
 
             caCert.publicKey = keys.publicKey;
-            caCert.serialNumber = "01";
+            caCert.serialNumber = Date.now()
+                .toString(16)
+                .replace(/(..)/g, "$1:")
+                .slice(0, -2);
             caCert.validity.notBefore = new Date();
             caCert.validity.notAfter = new Date();
             caCert.validity.notAfter.setFullYear(
@@ -54,11 +57,15 @@ const _getCACert = () => {
 
             const attrs = [
                 {
-                    name: "commonName",
+                    name: "countryName",
                     value: "Webpen Proxy",
                 },
                 {
-                    name: "countryName",
+                    shortName: "ST",
+                    value: "Webpen Proxy",
+                },
+                {
+                    name: "localityName",
                     value: "Webpen Proxy",
                 },
                 {
@@ -67,7 +74,11 @@ const _getCACert = () => {
                 },
                 {
                     shortName: "OU",
-                    value: "Webpen Proxy",
+                    value: "Webpen Proxy CA",
+                },
+                {
+                    name: "commonName",
+                    value: "Webpen Proxy CA",
                 },
             ];
 
@@ -78,48 +89,6 @@ const _getCACert = () => {
                 {
                     name: "basicConstraints",
                     cA: true,
-                },
-                {
-                    name: "keyUsage",
-                    keyCertSign: true,
-                    digitalSignature: true,
-                    nonRepudiation: true,
-                    keyEncipherment: true,
-                    dataEncipherment: true,
-                },
-                {
-                    name: "extKeyUsage",
-                    serverAuth: true,
-                    clientAuth: true,
-                    codeSigning: true,
-                    emailProtection: true,
-                    timeStamping: true,
-                },
-                {
-                    name: "nsCertType",
-                    client: true,
-                    server: true,
-                    email: true,
-                    objsign: true,
-                    sslCA: true,
-                    emailCA: true,
-                    objCA: true,
-                },
-                {
-                    name: "subjectAltName",
-                    altNames: [
-                        {
-                            type: 6, // URI
-                            value: "http://localhost",
-                        },
-                        {
-                            type: 7, // IP
-                            ip: "127.0.0.1",
-                        },
-                    ],
-                },
-                {
-                    name: "subjectKeyIdentifier",
                 },
             ]);
 
@@ -147,13 +116,23 @@ const _getCACert = () => {
 };
 
 const _getCert = (domain) => {
+    const dnsl = domain.split(".");
+    const nDomain =
+        dnsl.length >= 2
+            ? dnsl.slice(Math.max(dnsl.length - 2, 0)).join(".")
+            : domain;
+    const domainDns = domain !== nDomain ? [{ type: 2, value: domain }] : [];
+
     const keys = _getKeys();
     const caCert = _getCACert();
     const cert = forge.pki.createCertificate();
     const keyPair = forge.pki.rsa.generateKeyPair(2048);
 
     cert.publicKey = keyPair.publicKey;
-    cert.serialNumber = "02";
+    cert.serialNumber = Date.now()
+        .toString(16)
+        .replace(/(..)/g, "$1:")
+        .slice(0, -2);
     cert.validity.notBefore = new Date();
     cert.validity.notAfter = new Date();
     cert.validity.notAfter.setFullYear(
@@ -161,10 +140,6 @@ const _getCert = (domain) => {
     );
 
     const attrs = [
-        {
-            name: "commonName",
-            value: domain,
-        },
         {
             name: "countryName",
             value: "Webpen Proxy",
@@ -175,7 +150,11 @@ const _getCert = (domain) => {
         },
         {
             shortName: "OU",
-            value: "Webpen Proxy",
+            value: "Webpen Proxy CA",
+        },
+        {
+            name: "commonName",
+            value: domain,
         },
     ];
 
@@ -204,6 +183,20 @@ const _getCert = (domain) => {
             server: true,
             email: true,
             objsign: true,
+        },
+        {
+            name: "subjectAltName",
+            altNames: [
+                ...domainDns,
+                {
+                    type: 2, // DNS
+                    value: nDomain,
+                },
+                {
+                    type: 2, // DNS (2)
+                    value: `*.${nDomain}`,
+                },
+            ],
         },
         {
             name: "subjectKeyIdentifier",
