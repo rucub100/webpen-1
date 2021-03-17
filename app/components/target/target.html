@@ -27,8 +27,100 @@
     </div>
 
     <div id="scope" class="tabcontent">
-        <h3>Scope</h3>
-        <p>TODO</p>
+        <p>Specify the target for your current project. This configuration applies globally. Each component of the URL
+            can be filtered separately by specifying a regular expression.
+        </p>
+
+        <div id="target-input-line">
+            <div>
+                <label for="scheme">Scheme:</label><br>
+                <select id="schemes">
+                    <option value="any">Any</option>
+                    <option value="http">HTTP</option>
+                    <option value="https">HTTPS</option>
+                </select>
+            </div>
+            <div style="flex: 1 0 auto;">
+                <label for="authority">Authority:</label><br>
+                <input type="text" id="authority" name="authority" style="width: 100%;">
+            </div>
+            <div style="flex: 2 0 auto;">
+                <label for="path">Path:</label><br>
+                <input type="text" id="path" name="path" style="width: 100%;">
+            </div>
+            <div>
+                <label></label><br>
+                <button style="min-width: 15ch;" onclick="addScopeFilter()">
+                    <i class="fas fa-save fa-fw fa-lg"></i><span>add</span>
+                </button>
+                <button style="margin-right: 1rem; min-width: 15ch">
+                    <i class="fas fa-paste fa-fw fa-lg"></i><span>paste</span>
+                </button>
+            </div>
+        </div>
+
+        <table id="scope-filter-table">
+            <thead>
+                <tr>
+                    <th style="width: 8ch;">Enabled</th>
+                    <th style="width: 10ch;">Scheme</th>
+                    <th style="width: 35%;">Authority</th>
+                    <th>Path</th>
+                    <th style="width: 10ch;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <i class="far fa-check-square fa-fw fa-lg"></i>
+                    </td>
+                    <td>Any</td>
+                    <td>Any</td>
+                    <td>Any</td>
+                    <td>
+                        <i class="fas fa-pen fa-fw"></i>
+                        <i class="fas fa-trash fa-fw"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="far fa-square fa-fw fa-lg"></i>
+                    </td>
+                    <td>HTTPS</td>
+                    <td>Any</td>
+                    <td>Any</td>
+                    <td>
+                        <i class="fas fa-pen fa-fw"></i>
+                        <i class="fas fa-trash fa-fw"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="far fa-check-square fa-fw fa-lg"></i>
+                    </td>
+                    <td>Any</td>
+                    <td>Any</td>
+                    <td>Any</td>
+                    <td>
+                        <i class="fas fa-pen fa-fw"></i>
+                        <i class="fas fa-trash fa-fw"></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <i class="far fa-square fa-fw fa-lg"></i>
+                    </td>
+                    <td>Any</td>
+                    <td>Any</td>
+                    <td>Any</td>
+                    <td>
+                        <i class="fas fa-pen fa-fw"></i>
+                        <i class="fas fa-trash fa-fw"></i>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot></tfoot>
+        </table>
     </div>
 
     <div id="sitemap" class="tabcontent">

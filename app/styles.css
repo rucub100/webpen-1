@@ -89,11 +89,29 @@ button:active {
     box-shadow: none;
 }
 
-input {
+input,
+select {
     padding: 0.25rem;
     color: rgb(var(--font));
     background-color: rgb(var(--background-1));
     border: thin solid rgba(var(--font), 0.1);
     font-size: 1rem;
     outline: none;
+}
+
+table {
+    border-spacing: 0;
+}
+
+th {
+    text-align: left;
+    padding: 0.25rem;
+    color: rgba(var(--font), 0.68);
+    background-color: rgb(var(--background-1));
+    font-size: 1rem;
+    outline: none;
+}
+
+td {
+    padding: 0.25rem;
 }

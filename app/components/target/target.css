@@ -49,3 +49,35 @@ span {
 svg {
     margin-right: 0.5ch;
 }
+
+#target-input-line {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: stretch;
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100ch;
+}
+
+#target-input-line > div {
+    margin-right: 1rem;
+}
+
+#scope-filter-table {
+    width: 100%;
+}
+
+#scope-filter-table svg {
+    color: rgba(var(--font), 0.5);
+}
+
+#scope-filter-table svg:hover {
+    color: unset;
+    cursor: pointer;
+}
+
+#scope-filter-table tr:hover {
+    background-color: rgba(var(--font), 0.06);
+}
