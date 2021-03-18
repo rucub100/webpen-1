@@ -2,7 +2,7 @@ const { ipcMain } = require("electron");
 const net = require("net");
 const http = require("http");
 const https = require("https");
-const { getCAPem, getCAPrivateKeyPem, getPem } = require("./pki");
+const { getCAPem, getPem } = require("./pki.service");
 const { URL } = require("url");
 const tls = require("tls");
 
