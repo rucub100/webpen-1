@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("electron", {
     nodeVersion: () => process.versions.node,
     chromeVersion: () => process.versions.chrome,
     electronVersion: () => process.versions.electron,
+    // PROXY
     statusProxy: () => ipcRenderer.invoke("proxy:status"),
     startProxy: (address, port) =>
         ipcRenderer.invoke("proxy:start", address, port),
@@ -19,4 +20,12 @@ contextBridge.exposeInMainWorld("electron", {
         ipcRenderer.invoke("proxy:intercept:accept", value),
     dropNextInterceptedMessage: () =>
         ipcRenderer.invoke("proxy:intercept:drop"),
+    // TARGET
+    getTargetScope: () => ipcRenderer.invoke("target:get-scope"),
+    addTargetFilter: (filter) =>
+        ipcRenderer.invoke("target:add-filter", filter),
+    deleteTargetFilter: (index) =>
+        ipcRenderer.invoke("target:delete-filter", index),
+    updateTargetFilter: (index, filter) =>
+        ipcRenderer.invoke("target:update-filter", index, filter),
 });

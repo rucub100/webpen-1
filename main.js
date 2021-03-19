@@ -6,6 +6,8 @@ const { buildAndSetApplicationMenu } = require("./app/electron/mainMenu");
 const { createMainWindow } = require("./app/electron/mainWindow");
 const { stopProxy, startProxy } = require("./app/services/proxy.service");
 
+require("./app/services/target.service");
+
 buildAndSetApplicationMenu();
 
 startProxy();
