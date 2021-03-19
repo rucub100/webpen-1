@@ -3,6 +3,7 @@ const net = require("net");
 const http = require("http");
 const https = require("https");
 const { getCAPem, getPem } = require("./pki.service");
+const { testScope } = require("./target.service");
 const { URL } = require("url");
 const tls = require("tls");
 
@@ -316,8 +317,14 @@ const watchQueue = () => {
         } else if (proxyResQueue.length > 0) {
             const { req, rawRequest, targetRes, res } = proxyResQueue.shift();
             const url = req ? req.url : rawRequest.url;
+            const absoluteUrl = rawRequest ? rawRequest.absoluteUrl : undefined;
             console.log(new Date(), "[HTTP PROXY <-]:", url);
-            if (intercept) {
+            if (
+                intercept &&
+                testScope(
+                    absoluteUrl ?? _normalizeUrl("https", url, req.headers.host)
+                )
+            ) {
                 interceptResponse(targetRes, res);
             } else {
                 proxyResponse(targetRes, res);
@@ -325,7 +332,10 @@ const watchQueue = () => {
         } else if (proxyReqQueue.length > 0) {
             const { req, res } = proxyReqQueue.shift();
             console.log(new Date(), "[HTTP PROXY ->]:", req.method, req.url);
-            if (intercept) {
+            if (
+                intercept &&
+                testScope(_normalizeUrl("https", req.url, req.headers.host))
+            ) {
                 interceptRequest(req, res);
             } else {
                 proxyRequest(req, res);

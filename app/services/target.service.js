@@ -16,6 +16,43 @@ const updateTargetFilter = (index, filter) => {
     targetFilters[index] = filter;
 };
 
+const _getUserInfo = (url) => {
+    if (url.username) {
+        return url.username + (url.password ? `:${url.password}` : "") + "@";
+    }
+
+    return "";
+};
+
+const testScope = (url) => {
+    if (
+        targetFilters.length == 0 ||
+        targetFilters.filter((f) => f.enabled).length == 0
+    ) {
+        return false;
+    }
+
+    const _url = new URL(url);
+    const scheme = _url.protocol;
+    const authority = _getUserInfo(_url) + _url.host;
+    const path = _url.pathname;
+
+    const filters = targetFilters.filter(
+        (x) => x.enabled && (x.scheme === "any" || x.scheme === scheme)
+    );
+
+    for (filter of filters) {
+        if (
+            new RegExp(filter.authority).test(authority) &&
+            new RegExp(filter.path).test(path)
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
 // #endregion
 
 // #region IPC ----------------------------------------------------------------
@@ -50,4 +87,6 @@ ipcMain.handle("target:update-filter", (_event, index, filter) => {
 
 // #endregion
 
-// module.exports = {};
+module.exports = {
+    testScope,
+};
