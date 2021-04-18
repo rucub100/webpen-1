@@ -11,17 +11,17 @@ const createMainWindow = () => {
         webPreferences: {
             contextIsolation: true,
             sandbox: true,
-            preload: path.join(app.getAppPath(), "app/preload.js"),
+            preload: path.join(__dirname, "preload.js"),
         },
     });
 
-    win.loadFile("app/index.html");
+    win.loadFile("index.html");
 
     win.once("ready-to-show", () => {
         win.show();
     });
 
-    global.show = () => {
+    globalThis.show = () => {
         win.show();
     };
 

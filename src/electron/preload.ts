@@ -9,23 +9,23 @@ contextBridge.exposeInMainWorld("electron", {
     electronVersion: () => process.versions.electron,
     // PROXY
     statusProxy: () => ipcRenderer.invoke("proxy:status"),
-    startProxy: (address, port) =>
+    startProxy: (address: string, port: number) =>
         ipcRenderer.invoke("proxy:start", address, port),
     stopProxy: () => ipcRenderer.invoke("proxy:stop"),
     getProxyIntercept: () => ipcRenderer.invoke("proxy:intercept:get"),
-    setProxyIntercept: (enable) =>
+    setProxyIntercept: (enable: boolean) =>
         ipcRenderer.invoke("proxy:intercept", enable),
     getNextInterceptedMessage: () => ipcRenderer.invoke("proxy:intercept:next"),
-    acceptNextInterceptedMessage: (value) =>
+    acceptNextInterceptedMessage: (value: string) =>
         ipcRenderer.invoke("proxy:intercept:accept", value),
     dropNextInterceptedMessage: () =>
         ipcRenderer.invoke("proxy:intercept:drop"),
     // TARGET
     getTargetScope: () => ipcRenderer.invoke("target:get-scope"),
-    addTargetFilter: (filter) =>
+    addTargetFilter: (filter: string) =>
         ipcRenderer.invoke("target:add-filter", filter),
-    deleteTargetFilter: (index) =>
+    deleteTargetFilter: (index: number) =>
         ipcRenderer.invoke("target:delete-filter", index),
-    updateTargetFilter: (index, filter) =>
+    updateTargetFilter: (index: number, filter: string) =>
         ipcRenderer.invoke("target:update-filter", index, filter),
 });
